@@ -24,52 +24,24 @@ function lerp(a, b, t) {
 const Divider = styled.div`
   width: 100%;
   height: 5px;
-  background-color: ${(props) => (props.active ? "dodgerblue" : "transparent")};
+  background-color: ${(props) => (props.active ? "#2B95D6" : "transparent")};
+  transition: background-color 0.2s ease;
 `;
 
-const block1 = uuid();
-const block2 = uuid();
-const block3 = uuid();
-
-// class Node {
-//   constructor(info = null, next = null) {
-//     this.info = info;
-//     this.next = next;
-//   }
-// }
-
-// function remove() {}
-
-// function makeList(keys) {
-//   const dummy = new Node(null, null);
-//   const map = {};
-
-//   let tail = dummy;
-//   for (let i = 0; i < keys.length; ++i) {
-//     const key = keys[i];
-
-//     tail.next = new Node({ key }, null);
-//     map[key] = tail.next;
-
-//     tail = tail.next;
-//   }
-
-//   return {
-//     head: dummy.next,
-//     tail,
-//     map,
-//   };
-// }
-
-const Stack = ({ children }) => {
-  const [blocks, setBlocks] = useState({
-    [block1]: { ref: React.createRef() },
-    [block2]: { ref: React.createRef() },
-    [block3]: { ref: React.createRef() },
-  });
+const Stack = ({ children, blocks: initBlocks = [] }) => {
+  const [blocks, setBlocks] = useState({});
   const [draggingBlock, setDraggingBlock] = useState({ key: null });
-  const [blockOrder, setBlockOrder] = useState([block1, block2, block3]);
+  const [blockOrder, setBlockOrder] = useState([]);
   const [activeDivider, setActiveDivider] = useState({ key: null, index: -1 });
+
+  useEffect(() => {
+    const obj = {};
+    for (let i = 0; i < initBlocks.length; ++i) {
+      obj[initBlocks[i]] = { ref: React.createRef() };
+    }
+    setBlocks(obj);
+    setBlockOrder(initBlocks);
+  }, [initBlocks]);
 
   function onChildDragEnd(childId) {
     return function (blockAnimation) {
@@ -195,12 +167,7 @@ const Block = ({
 function App() {
   return (
     <div className="App">
-      <Stack>
-        <Block />
-        <Block />
-        <Block />
-        <Block />
-      </Stack>
+      <Stack blocks={[uuid(), uuid(), uuid()]} />
     </div>
   );
 }
