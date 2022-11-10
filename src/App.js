@@ -7,9 +7,29 @@ import _ from "lodash";
 
 const BlockContainer = styled(motion.div)`
   width: 100%;
-  height: 48px;
-  background-color: ${(props) => (props.active ? "black" : "blue")};
-  border: 4px solid red;
+  height: 88px;
+  background-color: ${(props) => (props.active ? "black" : "white")};
+  box-shadow: 0 0 0 1px rgb(17 20 24 / 15%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.4, 1, 0.75, 0.9),
+    box-shadow 0.2s cubic-bezier(0.4, 1, 0.75, 0.9),
+    -webkit-transform 0.2s cubic-bezier(0.4, 1, 0.75, 0.9),
+    -webkit-box-shadow 0.2s cubic-bezier(0.4, 1, 0.75, 0.9);
+  border-radius: 2px;
+  cursor: grab;
+
+  :hover {
+    box-shadow: 0 0 0 1px rgb(17 20 24 / 10%), 0 2px 4px rgb(17 20 24 / 20%),
+      0 8px 24px rgb(17 20 24 / 20%);
+  }
+`;
+
+const Button = styled.div`
+  position: fixed;
+  right: 64px;
+  bottom: 64px;
 `;
 
 const StackContainer = styled.div`
@@ -28,25 +48,29 @@ const Divider = styled.div`
   transition: background-color 0.2s ease;
 `;
 
-const Stack = ({ children, blocks: initBlocks = [] }) => {
-  const [blocks, setBlocks] = useState({});
-  const [draggingBlock, setDraggingBlock] = useState({ key: null });
+const Stack = ({ children, blocks: blockIds = [] }) => {
+  const [blockIdMap, setBlockIdMap] = useState({});
   const [blockOrder, setBlockOrder] = useState([]);
+
+  const [draggingBlock, setDraggingBlock] = useState({ key: null });
   const [activeDivider, setActiveDivider] = useState({ key: null, index: -1 });
 
   useEffect(() => {
-    const obj = {};
-    for (let i = 0; i < initBlocks.length; ++i) {
-      obj[initBlocks[i]] = { ref: React.createRef() };
+    const blockIdMap = {};
+
+    for (let i = 0; i < blockIds.length; i++) {
+      blockIdMap[blockIds[i]] = { ref: React.createRef() };
     }
-    setBlocks(obj);
-    setBlockOrder(initBlocks);
-  }, [initBlocks]);
+
+    setBlockIdMap(blockIdMap);
+    setBlockOrder(blockIds);
+  }, [blockIds]);
 
   function onChildDragEnd(childId) {
     return function (blockAnimation) {
       return function (e) {
         blockAnimation.start({ x: 0, y: 0 });
+        blockAnimation.set({cursor: "grab"})
 
         if (activeDivider.key !== null) {
           const before = blockOrder
@@ -70,6 +94,7 @@ const Stack = ({ children, blocks: initBlocks = [] }) => {
   function onChildDragStart(childId) {
     return function (blockAnimation) {
       return function (e) {
+        blockAnimation.set({cursor: "grabbing"})
         console.log(childId);
         setDraggingBlock(childId);
       };
@@ -79,17 +104,15 @@ const Stack = ({ children, blocks: initBlocks = [] }) => {
   function onChildDrag(childId) {
     return function (e) {
       const positionsWithCurrent = blockOrder
-        .filter((key) => !!blocks[key].ref)
+        .filter((key) => !!blockIdMap[key].ref)
         .map((key, index) => [
           key,
-          blocks[key].ref.current.getBoundingClientRect(),
+          blockIdMap[key].ref.current.getBoundingClientRect(),
           index,
         ]);
 
       const positions = positionsWithCurrent.filter(([id]) => id !== childId);
 
-      const target = e.target;
-      const mouseX = e.pageX;
       const mouseY = e.pageY;
 
       const [key, rect, ogIndex] =
@@ -117,14 +140,12 @@ const Stack = ({ children, blocks: initBlocks = [] }) => {
 
   return (
     <StackContainer>
-      {/* <Divider /> */}
       <AnimatePresence>
-        {blockOrder.map((key, index) => {
+        {blockOrder.map((key) => {
           return (
             <motion.div key={key} positionTransition>
               <Block
-                val={key}
-                innerRef={blocks[key].ref}
+                innerRef={blockIdMap[key].ref}
                 onDrag={onChildDrag(key)}
                 onDragEnd={onChildDragEnd(key)}
                 onDragStart={onChildDragStart(key)}
@@ -167,7 +188,7 @@ const Block = ({
 function App() {
   return (
     <div className="App">
-      <Stack blocks={[uuid(), uuid(), uuid()]} />
+      <Stack blocks={[uuid(), uuid(), uuid(), uuid(), uuid()]} />
     </div>
   );
 }
