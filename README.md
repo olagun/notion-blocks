@@ -2,7 +2,7 @@
 
 ![Notion Blocks](notion-blocks-demo.gif)
 
-One of the big reasons why I'm in love with [Notion] (https://notion.so) is that it's interactions feel great. One interaction that I really like and that's core to the product is dragging. Dragging blocks, documents, or any other object is critical to the Notion feel. Getting that feel is hard but I'm going to try my best!
+One of the big reasons why I'm in love with [Notion](https://notion.so) is that it's interactions feel great. One interaction that I really like and that's core to the product is dragging. Dragging blocks, documents, or any other object is critical to the Notion feel. Getting that feel is hard but I'm going to try my best!
 
 ## Getting Started 
 
