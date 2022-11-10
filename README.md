@@ -7,7 +7,7 @@ One of the big reasons why I'm in love with [Notion](https://notion.so) is that 
 ## Getting Started 
 
 1. `git clone https://github.com/olagun/notion-blocks`
-2. `cd covidtesting`
+2. `cd notion-blocks`
 3. `npm i`
 4. `npm start`
 
